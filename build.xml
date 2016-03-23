@@ -2,21 +2,26 @@
   <ItemGroup>
     <SolutionFile Include="CITesting.sln" />
     <BuildArtifactsDirectory Include="BuildArtifacts\" />
+    <NuGetExe Include=".nuget\NuGet.exe" />
   </ItemGroup>
 
   <PropertyGroup>
     <Configuration Condition=" '$(Configuration)' == '' ">Release</Configuration>
     <BuildPlatform Condition=" '$(BuildPlatform)' == '' ">Any CPU</BuildPlatform>
   </PropertyGroup>
-  
+
   <Target Name="Init" DependsOnTargets="Clean">
     <MakeDir Directories="@(BuildArtifactsDirectory)" />
+  </Target>
+  <Target Name ="NuGetRestore">
+    <Exec Command="echo NuGet Restore" />
+    <Exec Command='"@(NuGetExe)" restore @(SolutionFile)' />
   </Target>
   <Target Name="Clean">
     <RemoveDir Directories="@(BuildArtifactsDirectory)" />
   </Target>
 
-  <Target Name="Compile" DependsOnTargets="Init">
+  <Target Name="Compile" DependsOnTargets="Init;NuGetRestore;">
     <MSBuild Projects="@(SolutionFile)" Targets="Rebuild"
              Properties="OutDir=%(BuildArtifactsDirectory.FullPath);Configuration=$(Configuration);Platform=$(BuildPlatform)" />
   </Target>
